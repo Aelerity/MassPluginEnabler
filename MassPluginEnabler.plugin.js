@@ -9,38 +9,38 @@
 module.exports = class MassPluginEnabler {
     constructor() {
         this.enabled = false;
-        this.pluginName = 'MassPluginEnabler'; // Store the actual plugin name
+        this.pluginName = 'MassPluginEnabler'; 
+        this.excludedPlugins = ["example1", "example2"]; // List of plugin names to be excluded from enabling
     }
 
-    // Called when the plugin is loaded
     load() {
         console.log(`${this.pluginName} loaded`);
     }
 
-    // Called when the plugin is started
     start() {
         this.enableAllPlugins();
         this.enabled = true;
     }
 
-    // Called when the plugin is stopped
     stop() {
         console.log(`${this.pluginName} stopped`);
         this.enabled = false;
     }
 
-    // Enables all other plugins
     enableAllPlugins() {
         const allPlugins = BdApi.Plugins.getAll();
         allPlugins.forEach(plugin => {
-            if (plugin.id !== this.pluginName && !BdApi.Plugins.isEnabled(plugin.id)) {
+            if (plugin.id !== this.pluginName && !this.excludedPlugins.includes(plugin.id) && !BdApi.Plugins.isEnabled(plugin.id)) {
                 BdApi.Plugins.enable(plugin.id);
             }
         });
     }
 
-    // Utility method to get the plugin's display name
+    setExcludedPlugins(pluginList) {
+        this.excludedPlugins = pluginList;
+    }
+
     getName() {
-        return '!' + this.pluginName; // Prefix the actual name with '!' for display
+        return '!' + this.pluginName;
     }
 };
